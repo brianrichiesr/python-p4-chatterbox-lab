@@ -12,9 +12,25 @@ function App() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:4000/messages")
-      .then((r) => r.json())
-      .then((messages) => setMessages(messages));
+    fetch("/messages",{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(resp => {
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        throw (resp.statusText)
+      }
+    })
+    .then(data => {
+      setMessages(data)
+    })
+    .catch(err => {
+      alert(err)
+    })
   }, []);
 
   function handleAddMessage(newMessage) {
@@ -37,8 +53,12 @@ function App() {
     setMessages(updatedMessages);
   }
 
-  const displayedMessages = messages.filter((message) =>
-    message.body.toLowerCase().includes(search.toLowerCase())
+  const displayedMessages = messages.filter((message) => {
+    if (message.body) {
+       return message.body.toLowerCase().includes(search.toLowerCase())
+    }
+    return ""
+  }
   );
 
   return (

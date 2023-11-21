@@ -6,7 +6,7 @@ function NewMessage({ currentUser, onAddMessage }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    fetch("http://127.0.0.1:4000/messages", {
+    fetch("/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16,11 +16,20 @@ function NewMessage({ currentUser, onAddMessage }) {
         body: body,
       }),
     })
-      .then((r) => r.json())
-      .then((newMessage) => {
-        onAddMessage(newMessage);
+      .then(resp => {
+        if (resp.ok) {
+          return resp.json()
+        } else {
+          throw (resp.statusText)
+        }
+      })
+      .then(data => {
+        onAddMessage(data);
         setBody("");
-      });
+      })
+      .catch(err => {
+        alert(err)
+      })
   }
 
   return (
